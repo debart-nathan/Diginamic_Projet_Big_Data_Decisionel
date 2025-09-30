@@ -18,7 +18,7 @@ def normaliser_civilite(df):
         civilite = civilite.strip().lower()
         if civilite in ['m', 'm.']:
             return 'M.'
-        elif civilite in ['mme', 'mlle', 'melle.', 'melles','mlle','mlles']:
+        elif civilite in ['mme', 'mlle', 'melle.', 'melle','melles','mlle','mlles']:
             return 'Mme'
         elif civilite in ['m. et mme', 'm et mme','m. & mme', 'm & mme']:
             return 'M. & Mme'
@@ -29,7 +29,6 @@ def normaliser_civilite(df):
         df['genrecli'] = df['genrecli'].apply(normaliser)
     else:
         raise KeyError("Le champ 'genrecli' n'existe pas dans la dataframe.")
-
 
     return df
 
@@ -46,7 +45,7 @@ if __name__ == "__main__":
         'genrecli': ['M','m','Mme','mlle','Mlles','M. et Mme','M et Mme','','Autre']
     }
     
-    df_test = pd.Dataframe(data)
+    df_test = pd.DataFrame(data)
 
     df_result = normaliser_civilite(df_test)
     print(df_result)
