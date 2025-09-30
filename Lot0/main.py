@@ -2,11 +2,12 @@ import argparse
 import os
 import pandas as pd
 from analyse import analyse
-
+from formatage_majuscule import convertir_majuscule_csv
 
 
 def main() -> int:
     # Set up argument parser
+    
     parser = argparse.ArgumentParser(description="Process a file path.")
     parser.add_argument("filepath", type=str, help="Path to the input file")
 
@@ -21,11 +22,10 @@ def main() -> int:
     df = pd.read_csv(file_path)
 
     analyse(df)
+   
+    df_upper = convertir_majuscule_csv(df)
 
-
-
-
-    
+    print(df_upper.head())
     
     return 0
 
