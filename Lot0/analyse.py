@@ -12,5 +12,8 @@ def analyse(df):
     freq_null = df[df.columns[df.isnull().any()]].isnull().sum() * 100 / df.shape[0]
     print('Frequence des NULL',freq_null)
 
+
     #freq_null.sort_values(ascending=False).plot(kind = "bar", x = freq_null.index)
+
+    print(df.head().to_string()) 
 
