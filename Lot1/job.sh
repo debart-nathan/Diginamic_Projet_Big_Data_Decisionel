@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Définition des variables d'entrée et de sortie
-INPUT_FILE="/datavolume1/dataw_fro03.csv"
+INPUT_FILE="dataw_fro03.csv"
 OUTPUT_FILE="LOT1"
 
 # Lancement des processus Hadoop
@@ -16,7 +16,7 @@ hdfs dfs -mkdir -p input
 hdfs dfs -mkdir -p output
 
 # Copie du fichier d'entrée dans le HDFS
-hdfs dfs -put $INPUT_FILE input
+hdfs dfs -put /datavolume1/$INPUT_FILE input
 
 # Suppression du répertoire de sortie s'il existe déjà
 hdfs dfs -rm -r output/$OUTPUT_FILE
