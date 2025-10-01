@@ -28,7 +28,6 @@ def main() -> int:
     file_path = args.filepath
 
     df = pd.read_csv(file_path)
-
     analyse(df)
 
     ##
