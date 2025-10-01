@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Définition des variables d'entrée et de sortie
-INPUT_FILE="/datavolume/dataw_fro03.csv"
+INPUT_FILE="/datavolume1/dataw_fro03.csv"
 OUTPUT_FILE="LOT1"
 
 # Lancement des processus Hadoop

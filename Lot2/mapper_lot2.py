@@ -70,12 +70,13 @@ def mapper():
             # Format d'émission simple (séparé par des espaces)
             # CLÉ (non utilisée ici, mais nécessaire pour MapReduce) \t VALEUR
             # Ici on utilise un espace pour séparer les champs, comme ton reducer l'implique
-            output_value = f"{codcde} {cpcli} {villecli} {libobj} {qte} {timbrecde}"
+            output_value = "%s\t%s\t%s\t%s\t%s\t%s" % (codcde,cpcli,villecli,libobj,qte,timbrecde)
+
             print(output_value)
             
         except Exception as e:
             # Afficher les erreurs sur stderr et ignorer la ligne
-            print(f"Erreur de traitement/format sur la ligne: {line.strip()} - {e}", file=sys.stderr)
+            print("Erreur de traitement/format sur la ligne: %s - %s" % (line.strip(),e), file=sys.stderr)
             continue
 
 if __name__ == "__main__":
