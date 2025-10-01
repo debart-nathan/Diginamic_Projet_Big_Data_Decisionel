@@ -211,5 +211,5 @@ __marimo__/
 !.gitkeep
 **/data/*
 **/output/*
-documentation/
+**/documentation/
 
