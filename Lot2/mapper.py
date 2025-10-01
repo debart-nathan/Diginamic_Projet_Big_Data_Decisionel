@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 import sys
 import csv
 from io import StringIO
@@ -46,8 +47,8 @@ def mapper():
             # Le timbrecli est non renseigné (vide/NULL) ou à 0
             timbrecli = data['timbrecli'].strip().replace('"', '').upper()
             try:
-                # Si c'est un nombre, vérifier s'il est proche de 0 (éviter l'égalité flottante)
-                if abs(float(timbrecli)) > 1e-9:
+                # Si c'est un nombre, vérifier s'il est égal à 0
+                if float(timbrecli) != 0.0:
                     continue
             except ValueError:
                 # Si ce n'est pas un nombre, c'est potentiellement vide/NULL
