@@ -22,12 +22,14 @@ def lire_donnees(stdin):
                 'cpcli': cpcli,
                 'villecli': villecli,
                 'libobj': libobj,
-                'qte': int(qte),
-                'timbrecde': int(timbrecde)
+                'qte': float(qte),
+                'timbrecde': float(timbrecde)
             })
         except Exception as e:
             print("Erreur ligne ignorée : %s — %s" % (line.strip(), e), file=sys.stderr)
-    return pd.DataFrame(data)
+
+    df = pd.DataFrame(data)
+    return df
 
 def calculer_stats(df):
     """
@@ -49,6 +51,7 @@ def calculer_stats(df):
     sample = top100.sample(n=sample_size, random_state=42)
 
     merged = pd.merge(sample[['codcde']], df, on='codcde', how='left', validate='1:m')
+    merged['qte'] = merged['qte'].astype(float)
 
     ville_stats = merged.groupby(['villecli', 'cpcli']).agg({
         'qte': ['sum', 'mean']
@@ -62,7 +65,7 @@ def afficher_stats(ville_stats):
     """
     print("villecli\tcpcli\ttotal_qte\tavg_qte")
     for _, row in ville_stats.iterrows():
-        print("%s\t%s\t%d\t%.2f" % (row['villecli'], row['cpcli'], row['total_qte'], row['avg_qte']))
+        print("%s\t%s\t%.0f\t%.2f" % (row['villecli'], row['cpcli'], row['total_qte'], row['avg_qte']))
 
 def generer_graphique(ville_stats, output_path):
     """
@@ -83,7 +86,6 @@ def generer_graphique(ville_stats, output_path):
                      autopct=format_autopct,
                      startangle=140, textprops=dict(color="w"))
 
-    # Déballage défensif
     if len(result) == 3:
         wedges, texts, _ = result
     else:
@@ -109,6 +111,9 @@ def main():
     args = parser.parse_args()
 
     df = lire_donnees(sys.stdin)
+    print("Types des colonnes après lecture :", file=sys.stderr)
+    print(df.dtypes, file=sys.stderr)
+
     ville_stats = calculer_stats(df)
     afficher_stats(ville_stats)
     generer_graphique(ville_stats, args.output)

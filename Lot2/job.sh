@@ -2,7 +2,7 @@
 
 # Définition des variables d'entrée et de sortie
 INPUT_FILE="/datavolume1/dataw_fro03.csv"
-OUTPUT_FILE="LOT1"
+OUTPUT_FILE="LOT2"
 
 # Lancement des processus Hadoop
 # Zookeeper lancé par défaut    # JPS et HQuorumPeer
@@ -22,4 +22,4 @@ hdfs dfs -put $INPUT_FILE input
 hdfs dfs -rm -r output/$OUTPUT_FILE
 
 # Lancement du job Hadoop avec les scripts mapper et reducer
-hadoop jar /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-2.7.2.jar -file mapper.py -mapper "python3 mapper.py" -file reducer.py -reducer "python3 reducer.py" -input input/$INPUT_FILE -output output/$OUTPUT_FILE
+hadoop jar /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-2.7.2.jar -file mapper_lot2.py -mapper "python3 mapper_lot2.py" -file reducer_lot2.py -reducer "python3 reducer_lot2.py" -input input/$INPUT_FILE -output output/$OUTPUT_FILE
