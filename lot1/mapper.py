@@ -1,67 +1,75 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import sys
 import csv
-from datetime import datetime
+from io import StringIO
 
-# Chemin vers le fichier CSV local
-csv_file_path = r"C:\Users\Admin\Documents\Projet fil rouge\Projet Conception et développement d'une solution de collecte, stockage et traitement de données\Diginamic_Projet_Big_Data_Decisionel\data\dataw_fro03.csv"
+# Départements et période ciblés pour le LOT 2
+DEP_CIBLES = ['22', '49', '53']
+ANNEE_MIN = 2011
+ANNEE_MAX = 2016
 
-# Départements à filtrer
-VALID_DEPTS = {"22", "49", "53"}
+# Nom des colonnes dans le fichier CSV (ajuster si l'ordre change)
+COLUMNS = ["codcli","genrecli","nomcli","prenomcli","cpcli","villecli","codcde","datcde","timbrecli","timbrecde","Nbcolis","cheqcli","barchive","bstock","codobj","qte","Colis","libobj","Tailleobj","Poidsobj","points","indispobj","libcondit","prixcond","puobj"]
 
-# Fonctions utilitaires
-def parse_date(date_str):
-    """Parse la date en format dd/mm/YYYY ou YYYY-mm-dd"""
-    for fmt in ("%d/%m/%Y", "%Y-%m-%d"):
+def mapper():
+    # Ignore l'entête du CSV (première ligne)
+    next(sys.stdin) 
+    
+    for line in sys.stdin:
+        # Utilisation de StringIO pour simuler un fichier pour le parser CSV
+        line = line.strip()
+        if not line:
+            continue
+            
         try:
-            return datetime.strptime(date_str, fmt)
-        except ValueError:
+            # Le parser CSV gère correctement les champs entre guillemets
+            reader = csv.reader(StringIO(line), delimiter=',')
+            row = next(reader)
+            
+            # Assigner les valeurs aux noms de colonnes pour plus de clarté
+            data = dict(zip(COLUMNS, row))
+            
+            # --- 1. FILTRAGE ---
+            
+            # A. Filtrage par Année (datcde)
+            annee = int(data['datcde'].split('-')[0])
+            if not (ANNEE_MIN <= annee <= ANNEE_MAX):
+                continue
+            
+            # B. Filtrage par Département (cpcli)
+            departement = data['cpcli'][:2]
+            if departement not in DEP_CIBLES:
+                continue
+
+            # C. Filtrage par Timbre Client (timbrecli) non renseigné ou à 0
+            timbrecli = data['timbrecli'].strip().replace('"', '').upper()
+            if timbrecli != '' and timbrecli != 'NULL' and float(timbrecli) != 0:
+                 continue
+            
+            # --- 2. ÉMISSION ---
+            
+            codcde = data['codcde']
+            villecli = data['villecli']
+            
+            # S'assurer que les valeurs numériques sont des nombres
+            try:
+                qte = float(data['qte'])
+                timbrecde = float(data['timbrecde'])
+            except ValueError:
+                # Ignorer la ligne si les valeurs numériques sont invalides
+                continue
+
+            # Format de sortie : CLÉ (codcde) \t VALEUR (ville|qte|timbrecde)
+            # On envoie toutes les lignes d'articles d'une commande au Reducer
+            output_value = f"{villecli}|{qte}|{timbrecde}"
+            print(f"{codcde}\t{output_value}")
+            
+        except Exception as e:
+            # Gérer les lignes corrompues ou mal formatées
+            # print(f"Erreur sur la ligne: {line} - {e}", file=sys.stderr)
             continue
-    return None
 
-def parse_float(value):
-    """Convertit une valeur en float, remplace la virgule par point"""
-    try:
-        return float(value.replace(",", "."))
-    except (ValueError, AttributeError):
-        return 0.0
-
-def extract_dept(cpcli):
-    """Extrait le département à partir du code postal"""
-    cpcli = cpcli.strip().zfill(5)
-    if not cpcli:
-        return None
-    # Gestion particulière pour la Corse (codes 2A et 2B)
-    return cpcli[:2] if not cpcli.startswith("20") else cpcli[:3]
-
-# Lecture du CSV
-with open(csv_file_path, newline="", encoding="utf-8") as csvfile:
-    reader = csv.reader(csvfile, delimiter="\t")
-    for parts in reader:
-        if not parts or parts[0].lower() == "datcde":
-            continue
-        if len(parts) < 7:
-            continue
-
-        datcde, cpcli, timbrecde, qte, libobj, codcde, villecli = parts
-
-        # Filtrer par date
-        date_obj = parse_date(datcde)
-        if not date_obj or not (2011 <= date_obj.year <= 2016):
-            continue
-
-        # Filtrer par département
-        dept = extract_dept(cpcli)
-        if dept not in VALID_DEPTS:
-            continue
-
-        # Filtrer par timbrecli : vide ou 0
-        if timbrecde.strip() and parse_float(timbrecde) != 0:
-            continue
-
-        # Quantité
-        q = parse_float(qte)
-
-        # Sortie
-        print(f"{codcde}\t{villecli.upper()}\t{q}")
-
-
+if __name__ == "__main__":
+    mapper()
