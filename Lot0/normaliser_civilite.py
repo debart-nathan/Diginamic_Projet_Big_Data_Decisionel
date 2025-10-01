@@ -9,7 +9,8 @@ import io
 def normaliser_civilite(df):
     """
     Normalise le champ 'genrecli' d'un fichier CSV selon les règles spécifiées.
-    Le fichier nettoyé est sauvegardé au format Excel (*.xlsx) et une DataFrame normalisée est retournée.
+    Le fichier nettoyé est sauvegardé au format Excel (*.xlsx) 
+    et une DataFrame normalisée est retournée.
     """
     
     def normaliser(civilite):
@@ -41,8 +42,8 @@ if __name__ == "__main__":
 
     # Création d'un DataFrame de test
     data = {
-        'id':[1,2,3,4,5,6,7,8,9],
-        'genrecli': ['M','m','Mme','mlle','Mlles','M. et Mme','M et Mme','','Autre']
+        'id':[1,2,3,4,5,6,7,8,9,10,11],
+        'genrecli': ['M','m','Mme','mlle','melle','Mlles','Melles','M. et Mme','M et Mme','','Autre']
     }
     
     df_test = pd.DataFrame(data)
