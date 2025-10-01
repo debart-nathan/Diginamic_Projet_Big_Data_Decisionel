@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # Définition des variables d'entrée et de sortie
-INPUT_FILE="dataw_fro03.csv"
+INPUT_FILE="/datavolume1/dataw_fro03.csv"
 OUTPUT_FILE="LOT2"
 
 # Lancement des processus Hadoop
 # Zookeeper lancé par défaut    # JPS et HQuorumPeer
-#start-dfs.sh                    # NameNode & SecondaryNameNode
-#start-yarn.sh                   # ResourceManager
-#start-hbase.sh                  # HMaster et HRegionServer
-#hbase-daemon.sh start thrift    # ThriftServer
+start-dfs.sh                    # NameNode & SecondaryNameNode
+start-yarn.sh                   # ResourceManager
+start-hbase.sh                  # HMaster et HRegionServer
+hbase-daemon.sh start thrift    # ThriftServer
 
 # Création du répertoire d'entrée et de sortie s'ils n'existent pas
 hdfs dfs -mkdir -p input
