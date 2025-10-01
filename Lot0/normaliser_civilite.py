@@ -18,7 +18,7 @@ def normaliser_civilite(df):
         civilite = civilite.strip().lower()
         if civilite in ['m', 'm.']:
             return 'M.'
-        elif civilite in ['mme', 'mlle', 'melle.', 'melles','mlle','mlles']:
+        elif civilite in ['mme', 'mlle', 'melle.','melle', 'melles','mlle','mlles']:
             return 'Mme'
         elif civilite in ['m. et mme', 'm et mme','m. & mme', 'm & mme']:
             return 'M. & Mme'
@@ -43,10 +43,10 @@ if __name__ == "__main__":
     # Création d'un DataFrame de test
     data = {
         'id':[1,2,3,4,5,6,7,8,9],
-        'genrecli': ['M','m','Mme','mlle','Mlles','M. et Mme','M et Mme','','Autre']
+        'genrecli': ['M','m','Mme','mlle','melle.','Mlles','M. et Mme','M et Mme','','Autre']
     }
     
-    df_test = pd.Dataframe(data)
+    df_test = pd.DataFrame(data)
 
     df_result = normaliser_civilite(df_test)
     print(df_result)
