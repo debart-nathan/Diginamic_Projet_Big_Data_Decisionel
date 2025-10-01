@@ -47,6 +47,7 @@ if __name__ == "__main__":
     }
     
     df_test = pd.DataFrame(data)
+    df_test = pd.DataFrame(data)
 
     df_result = normaliser_civilite(df_test)
     print(df_result)
