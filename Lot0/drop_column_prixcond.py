@@ -1,4 +1,4 @@
-def drop_column(df) :
+def drop_column_prixcond(df) :
     # Nombre de colonnes et de lignes total avant traitement
     print(f"Nombre de colonnes dans de le DataFrame avant drope de la colonne prixcond : {df.shape[1]}")
     print()
