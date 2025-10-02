@@ -34,8 +34,10 @@ def main() -> int:
     ## FORMATAGE
     ##
 
-    # enleve la colonne prixcond
+    # enleve les colonnes non utilise
     df = drop_column_prixcond(df)
+    df=df.drop(columns= ["bstock"])
+    df=df.drop(columns= ["barchive"])
 
     # remplis les cellules vide par None
     df = df.where(pd.notnull(df), None)
