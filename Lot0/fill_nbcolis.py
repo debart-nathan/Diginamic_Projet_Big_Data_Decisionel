@@ -1,13 +1,13 @@
 import pandas as pd
 
 def fill_nbcolis(df):
-    # Count colis per codcmd
-    colis_count = df.groupby('codcmd')['colis'].count().reset_index()
-    colis_count.rename(columns={'colis': 'colis_count'}, inplace=True)
+    # Count Colis per codcde
+    colis_count = df.groupby('codcde')['Colis'].count().reset_index()
+    colis_count.rename(columns={'Colis': 'colis_count'}, inplace=True)
 
-    # Merge and fill missing nbcolis
-    df = df.merge(colis_count, on='codcmd', how='left')
-    df['nbcolis'] = df['nbcolis'].fillna(df['colis_count'])
+    # Merge and fill missing Nbcolis
+    df = df.merge(colis_count, on='codcde', how='left')
+    df['Nbcolis'] = df['Nbcolis'].fillna(df['colis_count'])
 
     # Drop helper column
     df.drop(columns='colis_count', inplace=True)
@@ -17,9 +17,9 @@ def fill_nbcolis(df):
 def main():
     # Sample data with integer values
     data = {
-        'codcmd': [101, 101, 101, 202, 202, 303],
-        'colis': [1, 2, 3, 4, 5, 6],
-        'nbcolis': [None, None, None, 2, 2, None]
+        'codcde': [101, 101, 101, 202, 202, 303],
+        'Colis': [1, 2, 3, 4, 5, 6],
+        'Nbcolis': [None, None, None, 2, 2, None]
     }
     df = pd.DataFrame(data)
 
