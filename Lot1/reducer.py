@@ -1,83 +1,51 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
+#!/usr/bin/env python3
 import sys
-import csv
-from io import StringIO
+import pandas as pd
+from collections import defaultdict
+import argparse
 
-# Critères de filtrage pour le LOT 2
-DEP_CIBLES = ['22', '49', '53']
-ANNEE_MIN = 2011
-ANNEE_MAX = 2016
+def reducer():
+    # Dictionnaire 
+    # cle = (codcde, cpcli, villecli), 
+    # valeur = {'qte': total, 'timbrecde': valeur}
+    parser = argparse.ArgumentParser(description="Analyse des commandes et génération de graphique.")
+    parser.add_argument('--output', type=str, default='/datavolume1/top_100_commandes.xlsx',
+                        help='Chemin du fichier PDF de sortie')
+    args = parser.parse_args()
 
-# Ordre des colonnes dans le fichier CSV (basé sur ton projet)
-COLUMNS = ["codcli","genrecli","nomcli","prenomcli","cpcli","villecli","codcde","datcde","timbrecli","timbrecde","Nbcolis","cheqcli","barchive","bstock","codobj","qte","Colis","libobj","Tailleobj","Poidsobj","points","indispobj","libcondit","prixcond","puobj"]
+    stats = defaultdict(lambda: {'qte': 0.0, 'timbrecde': 0.0})
 
-def mapper():
-    # Saute l'entête du CSV (première ligne)
-    try:
-        next(sys.stdin)
-    except StopIteration:
-        return
-    
     for line in sys.stdin:
-        line = line.strip()
-        if not line:
-            continue
-            
         try:
-            # Utilisation de StringIO pour parser la ligne CSV
-            reader = csv.reader(StringIO(line), delimiter=',')
-            row = next(reader)
-            
-            # Créer un dictionnaire pour accéder facilement aux colonnes
-            data = dict(zip(COLUMNS, row))
-            
-            # --- 1. FILTRAGE PAR DATE ---
-            annee = int(data['datcde'].split('-')[0])
-            if not (ANNEE_MIN <= annee <= ANNEE_MAX):
-                continue
-            
-            # --- 2. FILTRAGE PAR DÉPARTEMENT ---
-            departement = data['cpcli'][:2]
-            if departement not in DEP_CIBLES:
-                continue
+            codcde, cpcli, villecli, qte, timbrecde = line.strip().split('\t')
+            key = (codcde, cpcli, villecli)
+            qte = float(qte)
+            timbrecde = float(timbrecde)
 
-            # --- 3. FILTRAGE PAR TIMBRE CLIENT ---
-            # Le timbrecli est non renseigné (vide/NULL) ou à 0
-            timbrecli = data['timbrecli'].strip().replace('"', '').upper()
-            try:
-                # Si c'est un nombre, vérifier s'il est égal à 0
-                if abs(float(timbrecli)) > 1e-9:
-                    continue
-            except ValueError:
-                # Si ce n'est pas un nombre, c'est potentiellement vide/NULL
-                if timbrecli not in ['', 'NULL', 'VIDE']:
-                    # Si c'est un texte non-vide/non-NULL (non-conforme aux critères)
-                    continue 
+            stats[key]['qte'] += qte
+            stats[key]['timbrecde'] = timbrecde  # On conserve la derniere valeur rencontree
+        except ValueError:
+            continue  # Ignore les lignes mal formees
 
-            # --- 4. ÉMISSION DES DONNÉES FILTRÉES ---
-            # Le format doit être celui attendu par ta fonction lire_donnees()
-            # ('codcde', 'cpcli', 'villecli', 'libobj', 'qte', 'timbrecde')
-            
-            codcde = data['codcde']
-            cpcli = data['cpcli']
-            villecli = data['villecli']
-            libobj = data['libobj'].replace(' ', '_') # Remplacer espaces pour l'émission simple
-            qte = data['qte']
-            timbrecde = data['timbrecde']
-            
-            # Format d'émission simple (séparé par des espaces)
-            # CLÉ (non utilisée ici, mais nécessaire pour MapReduce) \t VALEUR
-            # Ici on utilise un espace pour séparer les champs, comme ton reducer l'implique
-            output_value = "%s\t%s\t%s\t%s\t%s\t%s" % (codcde,cpcli,villecli,libobj,qte,timbrecde)
+    # Construction du DataFrame
+    df = pd.DataFrame([
+        {
+            'codcde': key[0],
+            'cpcli': key[1],
+            'villecli': key[2],
+            'qte': value['qte'],
+            'timbrecde': value['timbrecde']
+        }
+        for key, value in stats.items()
+    ])
 
-            print(output_value)
-            
-        except Exception as e:
-            # Afficher les erreurs sur stderr et ignorer la ligne
-            print("Erreur de traitement/format sur la ligne: %s - %s" % (line.strip(),e), file=sys.stderr)
-            continue
+    # Tri selon les criteres
+    df_sorted = df.sort_values(by=['qte', 'timbrecde'], ascending=False).head(100)
+
+    # Export Excel
+    df_sorted.to_excel(args.output, index=False)
+    print("Export termine : %s" % args.output)
 
 if __name__ == "__main__":
-    mapper()
+    
+    reducer()
