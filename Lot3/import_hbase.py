@@ -52,7 +52,7 @@ try:
                 for col in columns:
                     if col in df.columns:
                         value = str(row[col]) if pd.notnull(row[col]) else ''
-                        key = f"{family}:{col}".encode('utf-8')
+                        key = "{0}:{1}".format(family,col).encode('utf-8')
                         data_dict[key] = value.encode('utf-8')
 
             batch.put(str(index).encode('utf-8'), data_dict)
