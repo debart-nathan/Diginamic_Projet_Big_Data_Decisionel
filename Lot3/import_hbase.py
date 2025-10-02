@@ -59,11 +59,11 @@ try:
             count += 1
 
             if count % 100 == 0:
-                print("{0} lignes insérées dans HBase...".format(count))
+                print("{0} lignes inserees dans HBase...".format(count))
         
         # Optional: print final count if not a multiple of 100
         if count % 100 != 0:
-            print("{0} lignes insérées dans HBase (dernier batch incomplet)".format(count))
+            print("{0} lignes inserees dans HBase (dernier batch incomplet)".format(count))
 
 
 except Exception as e:
