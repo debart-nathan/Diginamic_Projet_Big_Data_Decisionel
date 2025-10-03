@@ -4,9 +4,30 @@
 
 Ce projet pédagogique vise à mettre en œuvre une chaîne de traitement Big Data décisionnelle en utilisant l’écosystème Hadoop. Il est découpé en plusieurs lots (Lot 0 à Lot 4), chacun correspondant à une étape clé du pipeline : ingestion, stockage, traitement distribué, analyse et visualisation.
 
-L’objectif est de manipuler des données clients s, les stocker dans HDFS,Hbase et les traiter dans avec des scripts Python, et produire des indicateurs visuels pour appuyer la prise de décision.
+L’objectif est de manipuler des données clients, les stocker dans HDFS,Hbase et les traiter dans avec des scripts Python, et produire des indicateurs visuels pour appuyer la prise de décision.
 
 ---
+## Structure du projet
+```
+Diginamic_Projet_Big_Data_Decisionel/
+├───data/
+├───Lot0/
+│   ├───old_script/
+│   └──────output/
+├───Lot1
+│   └───output/
+├───Lot2
+│   └───output/
+├───Lot3
+│   └──────output/
+├───Lot4/
+├───Resultats/
+├───Readme.md
+├───.gitignore
+├───.env.template
+└───requierements.txt
+```
+
 
 ## Prérequis
 
@@ -24,6 +45,7 @@ Python 3.5.2
 chardet==2.3.0
 cppy==1.2.1
 cycler==0.10.0
+dotenv==0.9.9
 et-xmlfile==1.1.0
 happybase==1.1.0
 jdcal==1.4.1
@@ -48,6 +70,32 @@ urllib3==1.13.1
 
 installable avec `pip install ./requirements.txt` ou  `pip3 install ./requirements.txt`
 
+### Installation
+
+1. Cloner le dépôt git
+```bash
+git clone https://github.com/debart-nathan/Diginamic_Projet_Big_Data_Decisionel.git
+```
+
+2. Creation d'un environement virtuelle, ex :
+```bash
+python -m venv .venv
+.venv\Scripts\activate #under unix : source .venve/bin/activate
+```
+
+3. Installer les dépendances
+```bash
+python -m venv .venv
+.venv\Scripts\activate #under unix : source .venve/bin/activate
+```
+
+4. Définir les variables d'environnement (pour le Lot3)
+```bash
+cp .env.template .env
+```
+HBASE_HOST : l'adresse IP de la machine virtuelle\
+HBASE_PORT : le port publique de la machien vitruelle correspondant au port 9090\
+TABLE_NAME : le nom de la table à interroger dans hbase
 
 ### Connexion à la machine virtuelle
 
@@ -69,7 +117,7 @@ Saisir les identifiants de connexion.
 ./bash_hadoop_master.sh
 ./start-hadoop.sh
 start-hbase.sh
-hbase-daemon.sh start thrif
+hbase-daemon.sh start thrift
 ```
 
 ### Import des données dans HDFS
@@ -78,112 +126,72 @@ hbase-daemon.sh start thrif
 hdfs dfs -put path_to_data target_dir_in_hdfs
 hdfs dfs -ls target_dir_in_hdfs
 ```
+---
+## Remarque globale
+
+Pour le Lot1 et le Lot2 si il y a des erreurs lors du lancement du script **job.sh** lancer la commande dans le shell de la vm :
+```bash
+sed -i 's/\r$//' job.sh
+```
 
 ---
 
 ## Lot 0
 
-### description
+### Description
 
 L'objectif principal de ce lot et de préparé et nettoyer les données avant traitement
 
-### Execution
-
-1. repéré l'emplacement du fichier de data de digicheese.
-2. executer `python ./Lot0/main.py chemin/du/fichier` dans un terminal a la racine du projet.
-3. récupéré le fichier dans `./Lot0/output/dataw_fro03.csv`
-4. placé le dans le dossier `/var/lib/docker/volumes/digi01/_data` de votre VM
-
-### test
-
-un dossier tronquer de 1000 ligne nommé `dataw_fro03_mini_1000.csv` nous a était fournis.
-
-1. repéré l'emplacement du fichier mini de digicheese.
-2. executer `python ./Lot0/main.py chemin/du/fichier` dans un terminal a la racine du projet.
-3. récupéré le fichier dans `./Lot0/output/dataw_fro03.csv`
-4. Vérifier si son contenu est conforme au modification désiré par le script.
+Pour plus de détaille voir le [readme du Lot 0](/Lot0/README_LOT0.md).
 
 ## Lot 1
 
-### description
+### Description
 
 Ce lot permet d’extraire les 100 meilleures commandes selon des critères temporels et géographiques, puis de les exporter dans un fichier Excel.  
 Les commandes sont filtrées entre 2006 et 2010 et limitées aux départements 53, 61 et 28.  
 Les meilleures commandes sont définies par la somme des quantités et le total de timbrecde.
 
-### Execution
+Pour plus de détaille voir le [readme du Lot 1](/Lot1/readme_lot1.md).
 
-1. Placer le dossier `Lot1` dans le répertoire personnel `~` de votre conteneur Docker.
-2. Accéder au dossier avec `cd ~/Lot1`.
-3. Lancer le script principal avec :
-
-```bash
-./job.sh
-```
-
-1. Le fichier Excel est généré dans le dossier `/datavolume1/top_100_commandes.xlsx`
 
 ## Lot 2
 
-### description
+### Description
+Ce lot permet d'extraire aléatoirement 5% des 100 meilleures commandes selon des critères temporels et géographiques, puis de les exporter sous forme d'un pie chart dans un fichier pdf.
+Les commandes sont filtrées entre 2011 et 2016, limitées aux départements 22, 49 et 53 et aux timbres client non renseigné ou à 0.  
+Les meilleures commandes sont définies par la somme des quantités et le total de timbrecde.
 
-### execution
-
-### Test mapper
-Vous pouvez tester le script mapper localement avec python
-
-### Test Reducer
-
-Vous pouvez tester le script reducer localement avec python
-
-#### Génération de données de test
-
-**PowerShell :**
-
-```powershell
-1..500 | ForEach-Object {
-  "CDE$((1000..1999 | Get-Random))`t$((44000..44999 | Get-Random))`t$('Nantes','Angers','Le Mans','Cholet','Saint-Nazaire','Laval','La Roche-sur-Yon' | Get-Random)`t$('Stylo','Cahier','Classeur','Agrafeuse','Calculatrice','Trousse','Feutre' | Get-Random)`t$(Get-Random -Minimum 1 -Maximum 50)`t$(Get-Random -Minimum 100 -Maximum 999)"
-} | Set-Content -Path "./Lot2/data/reduce_test_input.csv" -Encoding UTF8
-```
-
-**Bash :**
-
-```bash
-seq 1 500 | awk 'BEGIN {
-  srand(); 
-  villes["Nantes"]=1; villes["Angers"]=1; villes["Le Mans"]=1; villes["Cholet"]=1; villes["Saint-Nazaire"]=1; villes["Laval"]=1; villes["La Roche-sur-Yon"]=1;
-  objets["Stylo"]=1; objets["Cahier"]=1; objets["Classeur"]=1; objets["Agrafeuse"]=1; objets["Calculatrice"]=1; objets["Trousse"]=1; objets["Feutre"]=1;
-}
-{
-  codcde = "CDE" int(1000 + rand() * 1000);
-  cpcli = int(44000 + rand() * 1000);
-  villecli = gensub(/.*/, "", "g", PROCINFO["sorted_in"] = "@ind_str_asc"; for (v in villes) if (rand() < 1.0) { villecli = v; break });
-  libobj = gensub(/.*/, "", "g", PROCINFO["sorted_in"] = "@ind_str_asc"; for (o in objets) if (rand() < 1.0) { libobj = o; break });
-  qte = int(1 + rand() * 49);
-  timbrecde = int(100 + rand() * 899);
-  print codcde "\t" cpcli "\t" villecli "\t" libobj "\t" qte "\t" timbrecde;
-}' > /lot2/data/test_input.csv
-```
-
-### test map-reduce
-
----
-
-#### Exécution des tests
-
-**PowerShell :**
-
-```powershell
-Get-Content .\lot2\data\test_input.csv | python .\Lot2\reducer_lot2.py --output=./Lot2/output/graphique_villes.pdf
-```
-
-**Bash :**
-
-```bash
-cat Lot2/data/test_input.csv | python Lot2/reducer_lot2.py --output=Lot2/output/graphique_villes.pdf
-```
-
+Pour plus de détaille voir le [readme du Lot 2](/Lot2/readme_lot2.md).
 
 ## Lot 3
 
-### Meilleurs commande de Nantes en 2020
+### Description
+Le lot 3 permet d'importer les données dans une table de la base de données hbase.
+Il permet également par la suite, de consulter la base de données pour récupérer différentes informations :
+
+1. La meilleur commande de Nantes en 2020 dont le résultat est exporté au format CSV
+2. Le nombre total de commande entre 2010 et 2015, réparties par année et le résultat est exporté sous la forme d'un graphe en fromat pdf.
+3. Le nom, le prénom, le nombre de commande et la somme des quantités d'objets du client qui a eu le plus de frais de timbre de commande. Le résultat est exporté sous format excel.
+
+Pour plus de détaille voir le [readme du Lot 3](/Lot3/readme_lot3.md).
+
+## Lot 4
+
+### Description
+Ce dernier lot, permet de se connecter à la base de données réaliser durant le lot 3 et de le charger dans PowerBI. Dans ce fichier PowerBI on y retrouve les résultats demandés dans les trois autres lots.
+
+Pour plus de détaille voir le [readme du Lot 4](/Lot3/readme_lot4.md).
+
+---
+
+## Contact
+### Contributor
+
+[@DEBART Nathan](github.com/debart-nathan)\
+[@VITA Philippe](https://github.com/PhilippeVita)\
+[@ZERABIB Nour](https://github.com/Nour-1990)\
+[@GUIDOUX Bluwen](https://github.com/Bluwen)
+
+### Référent éducatif
+[@Hotton Robin](mailto:rhotton@diginamic-formation.fr)  
