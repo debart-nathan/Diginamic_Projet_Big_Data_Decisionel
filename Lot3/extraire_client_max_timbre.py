@@ -3,20 +3,30 @@
 # --------------------------------------------------------------------------------
 
 import happybase
+import os
+from dotenv import load_dotenv
+import pandas as pd
 
-def extraire_client_max_timbres(
-    hote='node195229-hadoop-2025-d04-etudiant03.sh1.hidora.com',
-    port=11620,
-    table='digicheese_data'
-):
+load_dotenv()
+
+try:
+    HBASE_HOST = os.getenv("HBASE_HOST")
+    HBASE_PORT = int(os.getenv("HBASE_PORT"))
+    TABLE_NAME = os.getenv("TABLE_NAME")
+except Exception as e:
+    print(f"Error: {e}")
+
+conn = happybase.Connection(HBASE_HOST, port=HBASE_PORT)
+tab = conn.table(TABLE_NAME)
+
+def extraire_client_max_timbres(tab):
 
     """
     Avec les parametres de connexion ci-dessous : 
     - Interroge HBase pour trouver le client ayant le plus grand cumul de frais de timbres.
     - Retourne un dictionnaire : nom, prenom, nb_commandes, total_qte, total_timbre.
     """
-    conn = happybase.Connection(hote, port=port)
-    tab = conn.table(table)
+
 
     stats = {}
 
@@ -54,10 +64,15 @@ def extraire_client_max_timbres(
 # --------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    resultat = extraire_client_max_timbres()
+    resultat = extraire_client_max_timbres(tab)
+    print(resultat)
     print("Client avec le plus de frais de timbre :")
     print("Nom : %s" % resultat['nom'])
     print("Prenom : %s" % resultat['prenom'])
     print("Commandes : %s" % resultat['nb_commandes'])
     print("Quantite totale : %.2f" % resultat['total_qte'])
     print("Frais timbre total : %.2f" % resultat['total_timbre'])
+
+    #Recuperation des donnees sous format excel
+    df = pd.DataFrame(resultat, index = [0])
+    df.to_excel("./Lot3/output/client_max_timbre.xlsx")
