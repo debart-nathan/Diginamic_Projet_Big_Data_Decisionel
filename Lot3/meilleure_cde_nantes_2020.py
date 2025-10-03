@@ -2,11 +2,17 @@ import pandas as pd
 import happybase
 import sys
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # --- CONFIG HBASE ---
-HBASE_HOST = "hadoop_master"  # IP/hostname de ton serveur
-HBASE_PORT = 9090
-TABLE_NAME = "digicheese_data"
+try:
+    HBASE_HOST = os.getenv("HBASE_HOST")
+    HBASE_PORT = int(os.getenv("HBASE_PORT"))
+    TABLE_NAME = os.getenv("TABLE_NAME")
+except Exception as e:
+    print(f"Error: {e}")
 
 # Colonnes à récupérer depuis HBase
 COLS_TO_FETCH = [
@@ -75,7 +81,7 @@ if __name__ == "__main__":
         resultat = meilleure_commande_nantes_2020(df)
 
         if not resultat.empty:
-            OUTPUT_DIR = r"C:\Users\Admin\Documents\Projet fil rouge\Projet Conception et développement d'une solution de collecte, stockage et traitement de données\Diginamic_Projet_Big_Data_Decisionel\Lot3"
+            OUTPUT_DIR = "./Lot3/output/"
             os.makedirs(OUTPUT_DIR, exist_ok=True)
             output_csv = os.path.join(OUTPUT_DIR, "meilleure_commande_nantes_2020_hbase.csv")
 
