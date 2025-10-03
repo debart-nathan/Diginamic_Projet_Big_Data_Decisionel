@@ -142,7 +142,7 @@ sed -i 's/\r$//' job.sh
 
 L'objectif principal de ce lot et de préparé et nettoyer les données avant traitement
 
-Pour plus de détaille voir le [readme du Lot 0](/Lot3/readme_lot3.md).
+Pour plus de détaille voir le [readme du Lot 0](/Lot0/README_LOT0.md).
 
 ## Lot 1
 
