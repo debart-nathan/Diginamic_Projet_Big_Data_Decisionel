@@ -7,10 +7,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # --- CONFIG HBASE ---
-#HBASE_HOST = "hadoop_master"  # IP/hostname de ton serveur
-#HBASE_PORT = 9090
-#TABLE_NAME = "digicheese_data"
-
 try:
     HBASE_HOST = os.getenv("HBASE_HOST")
     HBASE_PORT = int(os.getenv("HBASE_PORT"))
