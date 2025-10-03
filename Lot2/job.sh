@@ -22,4 +22,4 @@ hdfs dfs -put /datavolume1/$INPUT_FILE input
 hdfs dfs -rm -r output/$OUTPUT_FILE
 
 # Lancement du job Hadoop avec les scripts mapper et reducer
-hadoop jar /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-2.7.2.jar -                                                                                                                                                             file mapper_lot2.py -mapper "python3 mapper_lot2.py" -file reducer_lot2.py -redu                                                                                                                                                             cer "python3 reducer_lot2.py" -input input/$INPUT_FILE -output output/$OUTPUT_FI                                                                                                                                                             LE
+hadoop jar /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-2.7.2.jar -file mapper_lot2.py -mapper "python3 mapper_lot2.py" -file reducer_lot2.py -reducer "python3 reducer_lot2.py" -input input/$INPUT_FILE -output output/$OUTPUT_FILE
