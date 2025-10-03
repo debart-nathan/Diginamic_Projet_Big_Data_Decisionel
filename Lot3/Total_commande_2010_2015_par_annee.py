@@ -49,7 +49,7 @@ def total_commande_par_annee_2010_2015(data, verbose = False):
     """
     Transforme une liste de tuple en DataFrame pandas.
     Puis transforme les donnees datetime en date puis en annee.
-    Enfin les donnees sont groupees par annees et le nombre de commande sont comptees par annnes.
+    Enfin les donnees sont groupees par annees et le nombre de commande sont comptees par annees.
     Une series des resultats est renvoye.
 
     Args:
@@ -57,7 +57,7 @@ def total_commande_par_annee_2010_2015(data, verbose = False):
         verbose (bool, optional): Affiche des prints dans le terminal pour avoir des informations suplementaires. Defaults to False.
 
     Returns:
-        df_grp: series contenant le total des commandes par annnes
+        df_grp: series contenant le total des commandes par annees
     """
     
     df = pd.DataFrame(data, columns=["datcde","codcde"])
