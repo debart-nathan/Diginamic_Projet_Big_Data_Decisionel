@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import sys
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -13,7 +16,7 @@ def lire_donnees(stdin):
     data = []
     for line in stdin:
         try:
-            fields = line.strip().split()
+            fields = line.strip().split('\t')
             if len(fields) != 6:
                 continue
             codcde, cpcli, villecli, libobj, qte, timbrecde = fields
